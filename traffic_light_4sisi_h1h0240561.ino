@@ -1,0 +1,99 @@
+/*
+ * TRAFFIC LIGHT 4 SISI
+ * Nama  : Muhammad Raihan Izzuddin Ismadi
+ * NIM   : H1H024056
+ * Matkul: Sistem Mikrokontroler
+ *
+ * Sisi: UTARA, SELATAN, TIMUR, BARAT
+ * Setiap sisi punya 3 LED: Merah, Kuning, Hijau
+ */
+
+// === PIN UTARA ===
+#define UTARA_MERAH   2
+#define UTARA_KUNING  3
+#define UTARA_HIJAU   4
+
+// === PIN SELATAN ===
+#define SELATAN_MERAH   5
+#define SELATAN_KUNING  6
+#define SELATAN_HIJAU   7
+
+// === PIN TIMUR ===
+#define TIMUR_MERAH   8
+#define TIMUR_KUNING  9
+#define TIMUR_HIJAU   10
+
+// === PIN BARAT ===
+#define BARAT_MERAH   11
+#define BARAT_KUNING  12
+#define BARAT_HIJAU   13
+
+// Durasi (ms)
+#define HIJAU_DURASI   5000
+#define KUNING_DURASI  2000
+#define MERAH_DURASI   (HIJAU_DURASI + KUNING_DURASI)
+
+// Array semua pin LED
+int semuaPin[] = {
+  UTARA_MERAH, UTARA_KUNING, UTARA_HIJAU,
+  SELATAN_MERAH, SELATAN_KUNING, SELATAN_HIJAU,
+  TIMUR_MERAH, TIMUR_KUNING, TIMUR_HIJAU,
+  BARAT_MERAH, BARAT_KUNING, BARAT_HIJAU
+};
+
+// Struct untuk tiap sisi
+struct Sisi {
+  int merah, kuning, hijau;
+};
+
+Sisi sisi[4] = {
+  {UTARA_MERAH,   UTARA_KUNING,   UTARA_HIJAU},
+  {SELATAN_MERAH, SELATAN_KUNING, SELATAN_HIJAU},
+  {TIMUR_MERAH,   TIMUR_KUNING,   TIMUR_HIJAU},
+  {BARAT_MERAH,   BARAT_KUNING,   BARAT_HIJAU}
+};
+
+void setup() {
+  // Set semua pin sebagai OUTPUT
+  for (int i = 0; i < 12; i++) {
+    pinMode(semuaPin[i], OUTPUT);
+  }
+  // Semua merah saat mulai
+  semuaMerah();
+  delay(1000);
+}
+
+void loop() {
+  // Giliran tiap sisi: 0=Utara, 1=Selatan, 2=Timur, 3=Barat
+  for (int giliran = 0; giliran < 4; giliran++) {
+    jalankanSisi(giliran);
+  }
+}
+
+void semuaMerah() {
+  for (int i = 0; i < 4; i++) {
+    digitalWrite(sisi[i].merah,  HIGH);
+    digitalWrite(sisi[i].kuning, LOW);
+    digitalWrite(sisi[i].hijau,  LOW);
+  }
+}
+
+void jalankanSisi(int aktif) {
+  // Semua merah dulu
+  semuaMerah();
+
+  // Sisi aktif: nyalakan HIJAU
+  digitalWrite(sisi[aktif].merah,  LOW);
+  digitalWrite(sisi[aktif].hijau,  HIGH);
+  delay(HIJAU_DURASI);
+
+  // Sisi aktif: ganti ke KUNING
+  digitalWrite(sisi[aktif].hijau,  LOW);
+  digitalWrite(sisi[aktif].kuning, HIGH);
+  delay(KUNING_DURASI);
+
+  // Sisi aktif: balik ke MERAH
+  digitalWrite(sisi[aktif].kuning, LOW);
+  digitalWrite(sisi[aktif].merah,  HIGH);
+  delay(500); // jeda kecil sebelum giliran berikutnya
+}
